@@ -23,7 +23,7 @@ const TopBar = () => {
             href={link.url}
             key={link.label}
             className={`flex gap-4 text-body-medium ${
-              pathname == link.url ? "text-blue-1" : ""
+              pathname == link.url ? "text-blue-500" : "text-gray-500"
             }`}
           >
             <p>{link.label}</p>
@@ -48,7 +48,7 @@ const TopBar = () => {
                 href={link.url}
                 key={link.label}
                 className={`flex gap-4 text-body-medium ${
-                  pathname == link.url ? "text-blue-1" : ""
+                  pathname == link.url ? "text-blue-500" : "text-gray-500"
                 }`}
               >
                 {link.icon} <p>{link.label}</p>

@@ -1,5 +1,7 @@
+import CollectionForm from "@/components/collections/CollectionForm";
+
 const CreateCollection = () => {
-  return <div>collections page</div>;
+  return <CollectionForm />;
 };
 
 export default CreateCollection;

@@ -1,6 +1,7 @@
 "use client";
 
 import { Separator } from "../ui/separator";
+import toast from "react-hot-toast";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,6 +20,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "../ui/textarea";
 import ImageUpload from "../custom ui/ImageUpload";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
@@ -27,6 +30,9 @@ const formSchema = z.object({
 });
 
 const CollectionForm = () => {
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
   // defining the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,8 +43,23 @@ const CollectionForm = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/collections", {
+        method: "POST",
+        body: JSON.stringify(values),
+      });
+
+      if (res.ok) {
+        setLoading(false);
+        toast.success("Collection created successfully!");
+        router.push("/collections");
+      }
+    } catch (err) {
+      console.log("[collections_POST", err);
+      toast.error("Something went wrong. Please try again.");
+    }
   }
 
   return (
@@ -103,8 +124,18 @@ const CollectionForm = () => {
                 </FormItem>
               )}
             />
-
-            <Button type="submit">Submit</Button>
+            <div className="flex gap-5">
+              <Button type="submit" className="bg-blue-500 text-white">
+                Submit
+              </Button>
+              <Button
+                type="button"
+                className="bg-red-500 text-white"
+                onClick={() => router.push("/collections")}
+              >
+                Discard
+              </Button>
+            </div>
           </form>
         </Form>
       </div>

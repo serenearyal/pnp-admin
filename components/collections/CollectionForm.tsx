@@ -51,6 +51,17 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
         },
   });
 
+  // DISABLE AUTO SUBMIT WHILE PRESSING ENTER KEY
+  const handleKeyPress = (
+    e:
+      | React.KeyboardEvent<HTMLInputElement>
+      | React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const url = initialData
@@ -99,7 +110,11 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
                 <FormItem>
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Title" {...field} />
+                    <Input
+                      placeholder="Title"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -119,6 +134,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
                       placeholder="Description..."
                       {...field}
                       rows={5}
+                      onKeyDown={handleKeyPress}
                     />
                   </FormControl>
                   <FormMessage />

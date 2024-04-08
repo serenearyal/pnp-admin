@@ -20,8 +20,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "../ui/textarea";
 import ImageUpload from "../custom ui/ImageUpload";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import Delete from "../custom ui/Delete";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
@@ -29,31 +30,42 @@ const formSchema = z.object({
   image: z.string(),
 });
 
-const CollectionForm = () => {
+interface CollectionFormProps {
+  initialData?: CollectionType | null;
+}
+
+const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
   const router = useRouter();
+  const params = useParams();
 
   const [loading, setLoading] = useState(false);
   // defining the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      image: "",
-    },
+    defaultValues: initialData
+      ? initialData
+      : {
+          title: "",
+          description: "",
+          image: "",
+        },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      const url = initialData
+        ? `/api/collections/${initialData._id}`
+        : "/api/collections";
       setLoading(true);
-      const res = await fetch("/api/collections", {
+      const res = await fetch(url, {
         method: "POST",
         body: JSON.stringify(values),
       });
 
       if (res.ok) {
         setLoading(false);
-        toast.success("Collection created successfully!");
+        toast.success(`Collection ${initialData ? "updated!" : "created"}`);
+        window.location.href = "/collections";
         router.push("/collections");
       }
     } catch (err) {
@@ -65,7 +77,15 @@ const CollectionForm = () => {
   return (
     <div>
       <div className="p-10 pb-2">
-        <p className="text-3xl font-bold text-gray-500">Create Collection</p>
+        {initialData ? (
+          <div className="flex items-center justify-between">
+            <p className="text-3xl font-bold text-gray-500">Edit Collection</p>
+            <Delete id={initialData._id} />
+          </div>
+        ) : (
+          <p className="text-3xl font-bold text-gray-500">Create Collection</p>
+        )}
+
         <Separator className="mt-1 mb-2" />
       </div>
       <div className="pl-10">

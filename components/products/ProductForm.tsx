@@ -25,14 +25,14 @@ import { useEffect, useState } from "react";
 import Delete from "../custom ui/Delete";
 import MultiText from "../custom ui/MultiText";
 import MultiSelect from "../custom ui/MultiSelect";
-import { METHODS } from "http";
+import Loader from "../custom ui/Loader";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
   description: z.string().min(2).max(500).trim(),
-  media: z.array(z.string()),
-  category: z.string(),
-  collections: z.array(z.string()),
+  media: z.array(z.string()).nonempty({ message: "Please upload images." }),
+  category: z.string().min(2).max(20),
+  collections: z.array(z.string()).nonempty({ message: "Select a collection" }),
   tags: z.array(z.string()),
   sizes: z.array(z.string()),
   colors: z.array(z.string()),
@@ -47,12 +47,11 @@ interface ProductFormProps {
 const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [collections, setCollections] = useState<CollectionType[]>([]);
 
   const getCollections = async () => {
     try {
-      setLoading(true);
       const res = await fetch("http://localhost:3000/api/collections", {
         method: "GET",
       });
@@ -73,7 +72,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
-      ? initialData
+      ? {
+          ...initialData,
+          collections: initialData.collections.map(
+            (collection) => collection._id
+          ),
+        }
       : {
           title: "",
           description: "",
@@ -124,13 +128,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
     }
   }
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <div>
       <div className="p-10 pb-2">
         {initialData ? (
           <div className="flex items-center justify-between">
             <p className="text-3xl font-bold text-gray-500">Edit Product</p>
-            <Delete id={initialData._id} />
+            <Delete item="product" id={initialData._id} />
           </div>
         ) : (
           <p className="text-3xl font-bold text-gray-500">Create Product</p>
@@ -182,19 +188,22 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
             />
 
             {/* ------------------------------------------- */}
-
             <FormField
               control={form.control}
               name="media"
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>Image</FormLabel>
                   <FormControl>
                     <ImageUpload
                       value={field.value}
-                      onChange={(url) => field.onChange([...field.value, url])}
-                      onRemove={(url) =>
+                      onChange={(url) => {
+                        console.log(field.value);
+                        field.onChange([...field.value, url]);
+                      }}
+                      onRemove={(urlToRemove) =>
                         field.onChange([
-                          ...field.value.filter((image) => image !== url),
+                          ...field.value.filter((url) => url !== urlToRemove),
                         ])
                       }
                     />
@@ -276,9 +285,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                       <MultiText
                         placeholder="Tags"
                         value={field.value}
-                        onChange={(tag) =>
-                          field.onChange([...field.value, tag])
-                        }
+                        onChange={(tag) => {
+                          console.log(field.value);
+                          field.onChange([...field.value, tag]);
+                        }}
                         onRemove={(tagToRemove) =>
                           field.onChange([
                             ...field.value.filter((tag) => tag !== tagToRemove),
@@ -292,24 +302,81 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
               />
 
               {/* ------------------------------------------- */}
+              {collections.length > 0 && (
+                <FormField
+                  control={form.control}
+                  name="collections"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Collections</FormLabel>
+                      <FormControl>
+                        <MultiSelect
+                          placeholder="Collections"
+                          collections={collections}
+                          value={field.value}
+                          onChange={(_id) =>
+                            field.onChange([...field.value, _id])
+                          }
+                          onRemove={(idToRemove) =>
+                            field.onChange([
+                              ...field.value.filter(
+                                (collectionId) => idToRemove !== collectionId
+                              ),
+                            ])
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* ------------------------------------------- */}
               <FormField
                 control={form.control}
-                name="collections"
+                name="colors"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Collections</FormLabel>
+                    <FormLabel>Colors</FormLabel>
                     <FormControl>
-                      <MultiSelect
-                        placeholder="Collections"
-                        collections={collections}
+                      <MultiText
+                        placeholder="Colors"
                         value={field.value}
-                        onChange={(_id) =>
-                          field.onChange([...field.value, _id])
+                        onChange={(color) =>
+                          field.onChange([...field.value, color])
                         }
-                        onRemove={(idToRemove) =>
+                        onRemove={(colorToRemove) =>
                           field.onChange([
                             ...field.value.filter(
-                              (collectionId) => idToRemove !== collectionId
+                              (color) => color !== colorToRemove
+                            ),
+                          ])
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* ------------------------------------------- */}
+              <FormField
+                control={form.control}
+                name="sizes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sizes</FormLabel>
+                    <FormControl>
+                      <MultiText
+                        placeholder="Sizes"
+                        value={field.value}
+                        onChange={(size) =>
+                          field.onChange([...field.value, size])
+                        }
+                        onRemove={(sizeToRemove) =>
+                          field.onChange([
+                            ...field.value.filter(
+                              (size) => size !== sizeToRemove
                             ),
                           ])
                         }
@@ -327,7 +394,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
               <Button
                 type="button"
                 className="bg-red-500 text-white"
-                onClick={() => router.push("/collections")}
+                onClick={() => router.push("/products")}
               >
                 Discard
               </Button>

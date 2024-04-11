@@ -31,8 +31,8 @@ const CollectionDetails = ({
   };
 
   useEffect(() => {
-    getCollectionDetails(), [];
-  });
+    getCollectionDetails();
+  }, []);
 
   return loading ? (
     <Loader />

@@ -91,7 +91,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
         {initialData ? (
           <div className="flex items-center justify-between">
             <p className="text-3xl font-bold text-gray-500">Edit Collection</p>
-            <Delete id={initialData._id} />
+            <Delete item="collection" id={initialData._id} />
           </div>
         ) : (
           <p className="text-3xl font-bold text-gray-500">Create Collection</p>
@@ -149,6 +149,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
               name="image"
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>Image</FormLabel>
                   <FormControl>
                     <ImageUpload
                       value={field.value ? [field.value] : []}

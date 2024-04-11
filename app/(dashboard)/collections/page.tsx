@@ -31,8 +31,6 @@ const Collections = () => {
     getCollections();
   }, []);
 
-  console.log(collections);
-
   return (
     <div className="py-5">
       {/* ------------------------------------------- */}

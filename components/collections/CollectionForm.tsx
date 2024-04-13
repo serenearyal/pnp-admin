@@ -86,7 +86,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
   }
 
   return (
-    <div>
+    <>
       <div className="p-10 pb-2">
         {initialData ? (
           <div className="flex items-center justify-between">
@@ -176,7 +176,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
           </form>
         </Form>
       </div>
-    </div>
+    </>
   );
 };
 

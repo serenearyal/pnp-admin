@@ -2,6 +2,7 @@
 
 import Loader from "@/components/custom ui/Loader";
 import ProductForm from "@/components/products/ProductForm";
+import { ProductType } from "@/lib/types";
 import React, { useEffect, useState } from "react";
 
 const ProductDetails = ({ params }: { params: { productId: string } }) => {

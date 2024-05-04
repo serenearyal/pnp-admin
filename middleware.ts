@@ -13,6 +13,8 @@ export default authMiddleware({
     "/api/checkout/:path*",
     "/api/webhooks/:path*",
     "/api/orders/:path*",
+    "/orders/:path*",
+    "/customers/:path*",
   ],
 });
 

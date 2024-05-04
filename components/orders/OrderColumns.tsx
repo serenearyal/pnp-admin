@@ -1,5 +1,6 @@
 "use client";
 
+import { OrderColumnType } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 

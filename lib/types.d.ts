@@ -1,3 +1,5 @@
+import { Customer } from "@/lib/models/Customer";
+import { Order } from "@/lib/models/Order";
 type CollectionType = {
   _id: string;
   title: string;
@@ -28,4 +30,17 @@ type OrderColumnType = {
   products: string;
   totalAmount: number;
   createdAt: string;
+};
+
+type OrderItemType = {
+  product: ProductType;
+  color: string;
+  size: string;
+  quantity: number;
+};
+
+type CustomerType = {
+  clerkId: string;
+  name: string;
+  email: string;
 };

@@ -33,3 +33,5 @@ export const GET = async (
     return new NextResponse("internal server error", { status: 500 });
   }
 };
+
+export const dynamic = "force-dynamic";

@@ -15,6 +15,7 @@ export default authMiddleware({
     "/api/orders/:path*",
     "/orders/:path*",
     "/customers/:path*",
+    "/api/search/:path*",
   ],
 });
 

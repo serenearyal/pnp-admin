@@ -1,10 +1,19 @@
-import { error } from "console";
 import Collection from "@/lib/models/Collections";
 import Product from "@/lib/models/Product";
 import { connectToDB } from "@/lib/mongoDB";
 import { auth } from "@clerk/nextjs";
 
 import { NextRequest, NextResponse } from "next/server";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
 
 export const GET = async (
   req: NextRequest,
@@ -24,7 +33,10 @@ export const GET = async (
         { status: 404 }
       );
     }
-    return NextResponse.json(product, { status: 200 });
+    return new NextResponse(JSON.stringify(product), {
+      status: 200,
+      headers: corsHeaders,
+    });
   } catch (err) {
     console.log("[productId_GET]", err);
     return new NextResponse("Internal error", { status: 500 });
